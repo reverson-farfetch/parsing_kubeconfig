@@ -27,7 +27,7 @@ def list_files(path="/etc/kubernetes",prefix="*-config"):
 def read_config(config_file):
     with open(config_file) as file: 
         kubeconfig_json = yaml.safe_load(file)
-        
+
     return kubeconfig_json
 
 def write_config(kubeconfig_dict,path_file):
@@ -39,7 +39,8 @@ def write_config(kubeconfig_dict,path_file):
 def append_configs(config_file):
 
     kubeconfig_json = read_config(config_file)
-    if kubeconfig_json['local']:
+    keys = kubeconfig_json.keys()
+    if "local" in keys:
         kubeconfig_json = kubeconfig_json['local']
 
     for cluster in kubeconfig_json['clusters']:
@@ -80,4 +81,10 @@ if __name__ == "__main__":
         kubeconfig_json['current-context'] = current_context
         if write_config(kubeconfig_json,path_to_save_kubeconfig):
             print("\nThe file was created in \"%s\"" % path_to_save_kubeconfig)
+
+    print("""
+    ~> To show the contexts in the file use the command: 'kubectl config get-contexts'
+    ~> To change the current context: 'kubectl config use-context <context_name>'
+    ~> To change the current namespace: 'kubectl config set-context --current --namespace=<namespace>'
+    """)
     
